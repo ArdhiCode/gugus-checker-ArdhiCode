@@ -29,10 +29,12 @@ func (s *mahasiswaService) GetByNRP(ctx context.Context, req dto.GetByNRPRequest
 		return dto.GetByNRPResponse{}, err
 	}
 
-	return dto.GetByNRPResponse{
+	resp := dto.GetByNRPResponse{
 		Name:   mahasiswa.Name,
 		NRP:    mahasiswa.NRP,
 		Gugus:  mahasiswa.Gugus.Gugus,
 		Region: mahasiswa.Region.Region,
-	}, nil
+	}
+
+	return resp, nil
 }
