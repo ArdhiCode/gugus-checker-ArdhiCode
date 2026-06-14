@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+    container_name: gugus-checker-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: gugus-checker-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: go-auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  migrate:
+    build: .
+    command: ["./app", "--migrate"]
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
